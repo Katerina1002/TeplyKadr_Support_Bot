@@ -17,7 +17,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 
 # ВСТАВЬ СЮДА СВОЙ ID (который получил от @userinfobot), ЧТОБЫ ПОЛУЧАТЬ УВЕДОМЛЕНИЯ:
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
-print("ID администратора:", ADMIN_ID) 
+
 
 
 bot = Bot(token=TOKEN)
@@ -115,7 +115,6 @@ async def book_phone(message: types.Message, state: FSMContext):
     user = message.from_user.full_name
     phone_num = message.text
 
-    print("КТО СЕЙЧАС ПИШЕТ БОТУ:", message.from_user.id)
     # 1. Сохраняем в базу данных
     database.add_booking(user, data.get('hall', 'Не указан'), data.get('date_time', 'Не указано'), phone_num)
     
