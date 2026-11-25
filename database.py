@@ -3,7 +3,6 @@ import sqlite3
 def init_db():
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
-    # Таблица отзывов
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS reviews (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -12,7 +11,6 @@ def init_db():
             comment TEXT
         )
     """)
-    # Таблица бронирований
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS bookings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
