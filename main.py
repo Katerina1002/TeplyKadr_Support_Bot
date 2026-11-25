@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
@@ -15,9 +15,10 @@ from aiogram.types import (
 )
 
 import database  # Подключаем наш файл базы данных
-
+load_dotenv()
 # Токен лучше хранить в переменной окружения BOT_TOKEN
-TOKEN = os.getenv("BOT_TOKEN", "9107154786:AAEZVBlV1B0K_WzdMLenq4ue8JWxYq-F2Ow")
+TOKEN = os.getenv("BOT_TOKEN")
+   
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
