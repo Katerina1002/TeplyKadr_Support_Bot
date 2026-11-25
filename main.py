@@ -16,7 +16,9 @@ load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 
 # ВСТАВЬ СЮДА СВОЙ ID (который получил от @userinfobot), ЧТОБЫ ПОЛУЧАТЬ УВЕДОМЛЕНИЯ:
-ADMIN_ID = int(os.getenv("ADMIN_ID")) 
+ADMIN_ID = int(os.getenv("ADMIN_ID"))
+print("ID администратора:", ADMIN_ID) 
+
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
@@ -111,24 +113,29 @@ async def book_time(message: types.Message, state: FSMContext):
 async def book_phone(message: types.Message, state: FSMContext):
     data = await state.get_data()
     user = message.from_user.full_name
-    
-    # 1. Сохраняем в базу
-    database.add_booking(user, data['hall'], data['date_time'], message.text)
-    
-    # 2. ОТПРАВЛЯЕМ УВЕДОМЛЕНИЕ ВАМ В ЛИЧКУ
-    admin_msg = (
-        "🔔 <b>НОВАЯ ЗАЯВКА!</b>\n\n"
-        f"👤 Клиент: {user}\n"
-        f"🏛 Зал: {data['hall']}\n"
-        f"📅 Время: {data['date_time']}\n"
-        f"📞 Телефон: {message.text}"
-    )
-    try:
-        await bot.send_message(ADMIN_ID, admin_msg, parse_mode="HTML")
-    except:
-        print("Ошибка: бот не может написать вам. Сначала запустите бота со своего аккаунта!")
+    phone_num = message.text
 
-    await message.answer("✅ <b>Заявка принята!</b>\nАдминистратор свяжется с вами в ближайшее время.", parse_mode="HTML")
+    print("КТО СЕЙЧАС ПИШЕТ БОТУ:", message.from_user.id)
+    # 1. Сохраняем в базу данных
+    database.add_booking(user, data.get('hall', 'Не указан'), data.get('date_time', 'Не указано'), phone_num)
+    
+    # 2. Текст для администратора (простой и надежный)
+    admin_msg = (
+        "🔔 НОВАЯ ЗАЯВКА НА БРОНИРОВАНИЕ!\n\n"
+        f"👤 Клиент: {user}\n"
+        f"🏛 Зал: {data.get('hall')}\n"
+        f"📅 Время: {data.get('date_time')}\n"
+        f"📞 Телефон: {phone_num}"
+    )
+    
+    # 3. Отправка администратору с выводом реальной ошибки в консоль
+    try:
+        await bot.send_message(chat_id=ADMIN_ID, text=admin_msg)
+        print("✅ Уведомление успешно отправлено администратору в Telegram!")
+    except Exception as e:
+        print(f"❌ Ошибка отправки админу: {e}")
+
+    await message.answer("✅ Ваша заявка принята! Администратор свяжется с вами в ближайшее время.")
     await state.clear()
 
 # --- ОТЗЫВЫ, FAQ и запуск (оставил как в прошлый раз) ---
