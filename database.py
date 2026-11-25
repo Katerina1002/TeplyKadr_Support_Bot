@@ -3,7 +3,6 @@ import sqlite3
 def init_db():
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
-    
     # Таблица отзывов
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS reviews (
@@ -13,15 +12,14 @@ def init_db():
             comment TEXT
         )
     """)
-    
     # Таблица бронирований
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS bookings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_name TEXT,
-            phone TEXT,
             hall TEXT,
-            date_time TEXT
+            date_time TEXT,
+            phone TEXT
         )
     """)
     conn.commit()
@@ -40,13 +38,13 @@ def get_reviews_stat():
     cursor.execute("SELECT AVG(rating), COUNT(id) FROM reviews")
     avg_rating, count = cursor.fetchone()
     conn.close()
-    if not avg_rating:
-        return 5.0, 0
+    if not avg_rating: return 5.0, 0
     return round(avg_rating, 1), count
 
-def add_booking(user_name, phone, hall, date_time):
+def add_booking(user_name, hall, date_time, phone):
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO bookings (user_name, phone, hall, date_time) VALUES (?, ?, ?, ?)", (user_name, phone, hall, date_time))
+    cursor.execute("INSERT INTO bookings (user_name, hall, date_time, phone) VALUES (?, ?, ?, ?)", 
+                   (user_name, hall, date_time, phone))
     conn.commit()
     conn.close()
