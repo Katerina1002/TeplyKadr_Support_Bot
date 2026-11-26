@@ -46,3 +46,18 @@ def add_booking(user_name, hall, date_time, phone):
                    (user_name, hall, date_time, phone))
     conn.commit()
     conn.close()
+def get_recent_reviews(limit=20):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT user_name, rating, comment
+        FROM reviews
+        ORDER BY id DESC
+        LIMIT ?
+        """,
+        (limit,)
+    )
+    reviews = cursor.fetchall()
+    conn.close()
+    return reviews
